@@ -1,14 +1,39 @@
-// 2d Array Demo
+// Sudoku 2d array demo
 
-let grid;
-let cellWidth;
-let cellHeight;
+let sudoku;
+let initialState;
+
+const GRIDSIZE = 9;
+let cellSize;
+
+function preload() {
+  sudoku = loadStrings("assets/1.txt");
+  initialState = loadStrings("assets/1.txt");
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  grid = generateRandomGrid(10);
-  cellWidth = width / grid[0].length;
-  cellHeight = height / grid.length;
+
+  // convert suduko into 2d array
+  for (let i=0; i<sudoku.length; i++) {
+    sudoku[i] = sudoku[i].split(",");
+    initialState[i] = initialState[i].split(",");
+  }
+
+  //loop through the whole 2d array, and turn everything to numbers
+  for (let y=0; y<GRIDSIZE; y++) {
+    for (let x=0; x<GRIDSIZE; x++) {
+      sudoku[y][x] = int(sudoku[y][x]);
+      initialState[y][x] = int(initialState[y][x]);
+    }
+  }
+
+  if (width < height) {
+    cellSize = width / GRIDSIZE;
+  }
+  else {
+    cellSize = height / GRIDSIZE;
+  }
 }
 
 function draw() {
@@ -16,53 +41,51 @@ function draw() {
   displayGrid();
 }
 
-function mousePressed() {
-  let cellX = floor(mouseX / cellWidth);
-  let cellY = floor(mouseY / cellHeight);
-
-  // console.log(cellX, cellY);
-  if (grid[cellY][cellX] === 0) {
-    grid[cellY][cellX] = 1;
-  }
-  else {
-    grid[cellY][cellX] = 0;
-  }
-}
-
-function keyPressed() {
-  if (key === " ") {
-    grid = generateRandomGrid(10);
-  }
-}
-
 function displayGrid() {
-  for (let y=0; y<grid.length; y++) {
-    for (let x=0; x<grid[y].length; x++) {
-      if (grid[y][x] === 0) {
-        fill("black");
-      }
-      else {
-        fill("white");
-      }
+  //squares and numbers
+  for (let y=0; y<GRIDSIZE; y++) {
+    for (let x=0; x<GRIDSIZE; x++) {
+      strokeWeight(1);
+      fill("white");
+      rect(x*cellSize, y*cellSize, cellSize, cellSize);
 
-      rect(cellWidth*x, cellHeight*y, cellWidth, cellHeight);
+      if (sudoku[y][x] !== 0) {
+        //show number
+
+        if (sudoku[y][x] === initialState[y][x]) {
+          //one of the given numbers
+          fill("gray");
+        }
+        else {
+          fill("black");
+        }
+        textSize(cellSize * 0.8);
+        textAlign(CENTER, CENTER);
+
+        text(sudoku[y][x], x*cellSize + cellSize/2, y*cellSize + cellSize/2);
+      }
     }
   }
+
+  //mini-grid lines
+  strokeWeight(5);
+  line(0, 3*cellSize, 9*cellSize, 3*cellSize);
+  line(0, 6*cellSize, 9*cellSize, 6*cellSize);
+  line(3*cellSize, 0, 3*cellSize, 9*cellSize);
+  line(6*cellSize, 0, 6*cellSize, 9*cellSize);
 }
 
 
-function generateRandomGrid(gridSize) {
-  let grid = [];
-  for (let i=0; i<gridSize; i++) {
-    grid.push([]);
-    for (let j=0; j<gridSize; j++) {
-      if (random(100) < 50) {
-        grid[i].push(0);
-      }
-      else {
-        grid[i].push(1);
-      }
-    }
+function mousePressed() {
+  let cellX = floor(mouseX / cellSize);
+  let cellY = floor(mouseY / cellSize);
+
+  changeCell(cellX, cellY);
+}
+
+function changeCell(x, y) {
+  if (sudoku[y][x] !== initialState[y][x] || sudoku[y][x] === 0) {
+    //don't go into double digits
+    sudoku[y][x] = (sudoku[y][x] + 1) % 10;
   }
-  return grid;
 }
