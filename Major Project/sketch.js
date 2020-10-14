@@ -18,6 +18,7 @@ function setup() {
 function draw() {
   background(220);
   image(running, mouseX, mouseY);
+  
 }
 
 function preload() {
