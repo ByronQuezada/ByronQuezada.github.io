@@ -60,14 +60,14 @@ function setup() {
   
   //Displaying start button
   startButton = createButton("Start Game");
-  startButton.position(width / 2 - (width / 4) / 2, height / 2 - (height / 8) / 2);
+  startButton.position(width / 2 - (width / 4) / 2, height / 2 - height / 8 / 2);
   startButton.size(width /4, height / 8);
   startButton.mousePressed(startGame);
   
   //Loading images and sounds
   pond = loadImage("pond.jpg");
   duck = loadImage("duck.png");
-  quack = loadSound('duckQuack.mp3');
+  quack = loadSound("duckQuack.mp3");
 }
 
 function draw() {
@@ -143,7 +143,7 @@ function startGame() {
 //Ending game and displaying try again button
 function endGame() {
   gameStarted = false;
-  background('Black');
+  background("Black");
   fill(255);
   text("GAME OVER", width / 2, height /2);
   cursor();
