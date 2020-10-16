@@ -8,7 +8,8 @@ let playHealth = 100;
 let monsterKills = 0;
 
 // Background managment.
-let background1, background2, background3, background4, background5, background6, background7, background8;
+let background1, background2, background3, background4, background5;
+let running;
 let backgrounds = [];
 let backgroundSelection = [];
 let backgroundColour;
@@ -39,6 +40,7 @@ function preload() {
   background3 = loadImage("assets/background3.png");
   background4 = loadImage("assets/background4.png");
   background5 = loadImage("assets/background5.png");
+  running = loadImage("assets/running.png");
   // background6 = loadImage("background6.png");
   // background7 = loadImage("background7.png");
   // background8 = loadImage("background8.png");
@@ -62,6 +64,7 @@ function setup() {
 
 // Set to run 30 times a second
 function draw() {
+  image(running, mouseX, mouseY);
   if (state === "start") {
     startScreen();
   } 
