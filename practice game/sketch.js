@@ -1,201 +1,241 @@
-//Heather Grove
-//Dodging Duck
-//Dodge the incoming bombs by moving your mouse
-//
-//Extra for experts:
-//I've added a quacking sound whenever the mouse is clicked
+// Player managment
+let hitboxScale = 9;
+let spriteScale = 9;
+//let knightLeft1, knightRight1, knightLeft2, knightRight2, knightStill;
+let spriteX;
+let spriteY;
+let playHealth = 100;
+let monsterKills = 0;
 
-//Setting image and sound variables
-let pond, duck, quack;
-let duckScalar = 0.5;
+// Background managment.
+let background1, background2, background3, background4, background5, background6, background7, background8;
+let backgrounds = [];
+let backgroundSelection = [];
+let backgroundColour;
 
-//Movement variables
-let x, y;
+// Movement
+let isMovingLeft, isMovingRight, isJumping;
+let isGrounded = false;
+let initialY;
+let jumpHeight = 70;
+let jumpSpeed = 8;
+let gravity = 5;
+let movementSpeed = 7;
 
-//Bomb variables
-let tryAgainButton;
-let numberofbombs = 10;
-let bombposX = [];
-let bombposY = [];
-let bombacceleration = [];
-let bombvelocity = [];
-let bombSize;
-let isUsingMouse;
+// Counters used to change between sprites, screens/gamestates, and locations
+let spriteTimer = 0;
+let state = "start";
+let areaCounter = 0; // Does nothing in this version
 
-//Time Variables
-let time = 0;
-let fallTime = 0;
+// Loads all Images
+function preload() {
+  // knightLeft1 = loadImage("knightLeft1.png");
+  // knightLeft2 = loadImage("knightLeft2.png");
+  // knightRight1 = loadImage("knightRight1.png");
+  // knightRight2 = loadImage("knightRight2.png");
+  // knightStill = loadImage("knightStill.png");
+  background1 = loadImage("assets/background1.png");
+  background2 = loadImage("assets/background2.png");
+  background3 = loadImage("assets/background3.png");
+  background4 = loadImage("assets/background4.png");
+  background5 = loadImage("assets/background5.png");
+  // background6 = loadImage("background6.png");
+  // background7 = loadImage("background7.png");
+  // background8 = loadImage("background8.png");
+}
 
-//Button Variables
-let startButton;
-let gameStarted = false;
-
-let hit;
-let score = 0;
-
-let ballColours = ["Orange", "Blue", "Purple", "Pink", "yellow"];
-let ballColour = "Orange";
-
+// Setup function runs once at the start of the program
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  background(50, 50, 255);
-  
-  //Setting up initial Bombs
-  initbombpos();
-  
-  //Creating acurate falltime for resetting bombs
-  let temp00 = 0, temp01 = -20;
-  while(temp01 < height) {
-    temp00 += 0.1;
-    temp01 += temp00;
-    fallTime++;
-  }
-  
-  hit = false;
-  
-  //Setting up variables using width and height
-  bombSize = width / 8;
-  x = width/2;
-  y = height/ 2;
-  
-  //Displaying start button
-  startButton = createButton("Start Game");
-  startButton.position(width / 2 - (width / 4) / 2, height / 2 - height / 8 / 2);
-  startButton.size(width /4, height / 8);
-  startButton.mousePressed(startGame);
-  
-  //Loading images and sounds
-  pond = loadImage("pond.jpg");
-  duck = loadImage("duck.png");
-  quack = loadSound("duckQuack.mp3");
+  imageMode(CENTER);
+  rectMode(CORNER);
+  frameRate(30);
+  spriteX = width / 2;
+  spriteY = height / 2;
+  isMovingLeft = false;
+  isMovingRight = false;
+  isJumping = false;
+  backgrounds = [background1, background2, background3, background4, background5];
+  selectBackgrounds();
+  backgroundColour = 0;
 }
 
+// Set to run 30 times a second
 function draw() {
-  
-  if (gameStarted) {
-    imageMode(CORNERS);
-    background(pond);
+  if (state === "start") {
+    startScreen();
+  } 
+  else if (state === "play") {
+    clear();
     
-    scoreUpdate();
-    displayText();
+    displayBackground();
     
-    displayDuck();
-    displayBombs();
-    updateBombPos();
+    // Uncomment next 2 lines to show character and ground hitbox.
+    // rect(spriteX, spriteY, height/hitboxScale, height/hitboxScale);
+    // line(0 - 10, height * 0.63, width + 10, height * 0.63);
     
-    time++;
+    // Draws and moves sprite.
+    displaySprite();
+    handleMovement();
+    applyGravity();
+    nextScreen();
+  }
+  else if (state === "dead") {
+    deathScreen();
   }
 }
 
-//Placement and Speed for initial Bombs
-function initbombpos() {
-  for (let i =0; i < numberofbombs; i++) {
-    bombacceleration[i] = random(0.02, 0.03);
-    bombvelocity[i] = random(5, 10);
-    bombposX[i] = random(0.5, width);
-    bombposY[i] = random(-20, -0.5);
+// Makes a start screen
+function startScreen() {
+  push();
+  background(backgroundColour);
+  fill(255);
+  textSize(35);
+  text("click to start game", width / 2, height / 2, CENTER, CENTER);
+  if (mouseIsPressed && state === "start") {
+    state = "play";
+  }
+  pop();
+}
+
+// Makes a death screen. This should never show as I have not added a way to die.
+function deathScreen() {
+  clear();
+  background(0);
+  fill(255);
+  textSize(35);
+  text("How did you manage this? I havent even added this", width / 2, height / 2, width/4, height/2);
+}
+
+// Selects which backgounds will be shown
+function selectBackgrounds() {
+  backgroundSelection = [];
+  // This loops however many times the height fits into the width rounded up. It then adds random numbers used to specify which backgrounds will be displayed and in what order. 
+  for (let i = 0; i < Math.ceil(width / height); i++) {
+    backgroundSelection.push(Math.floor(Math.random() * backgrounds.length)); 
   }
 }
 
-//Displaying bombs and checking collision
-function displayBombs() {
-  fill(ballColour);
+// Displays the bacground image
+function displayBackground() {
   
-  for (let b = 0; b < numberofbombs; b++) {
-    circle(bombposX[b], bombposY[b], bombSize);
-    
-    hit = collidePointCircle(mouseX, mouseY - duck.height * duckScalar / 2, bombposX[b], bombposY[b], bombSize);
-    
-    if (hit) {
-      endGame();
+  for (let i = 0; i < Math.ceil(width / height); i++) {
+    image(backgrounds[backgroundSelection[i]], height / 2 + height * i, height/2, height, height);
+  }
+}
+
+// Draws Sprite depending on which way you are moving or if you are standing still.
+// I know this is not the best way of changing between sprites however I did not have time to change it
+function displaySprite() {
+//   push();
+//   imageMode(CORNER);
+//   if (isMovingLeft) {
+//     if (spriteTimer <= 15) {
+//       image(knightLeft1, spriteX, spriteY, height/spriteScale, height/spriteScale);
+//       spriteTimer++;
+//     }
+//     else {
+//       image(knightLeft2, spriteX, spriteY, height/spriteScale, height/spriteScale);
+//       spriteTimer++;
+//       if (spriteTimer === 30) {
+//         spriteTimer = 0;
+//       }
+//     }
+//   }
+//   else if (isMovingRight) {
+//     if (spriteTimer <= 15) {
+//       image(knightRight1, spriteX, spriteY, height/spriteScale, height/spriteScale);
+//       spriteTimer++;
+//     }
+//     else {
+//       image(knightRight2, spriteX, spriteY, height/spriteScale, height/spriteScale);
+//       spriteTimer++;
+//       if (spriteTimer === 30) {
+//         spriteTimer = 0;
+//       }
+//     }
+//   }
+//   else {
+//     image(knightStill, spriteX, spriteY, height/spriteScale, height/spriteScale);
+//   }
+//   pop();
+}
+
+// Checks if sprite should be moving and then moves the sprite
+function handleMovement() {
+
+  if (isMovingLeft) {
+    spriteX -= movementSpeed;
+  }
+  if (isMovingRight) {
+    spriteX += movementSpeed;
+  }
+  if (isJumping) {
+    if (spriteY >= initialY - jumpHeight) {
+      spriteY -= jumpSpeed;
+    }
+    else {
+      isJumping = false;
     }
   }
 }
 
-//Moving bombs and checking collision
-function updateBombPos() {
-  for(let r = 0; r < numberofbombs; r++) {
-    bombvelocity[r] += bombacceleration[r];
-    bombposY[r] += bombvelocity[r];
-    
-    hit = collidePointCircle(mouseX, mouseY - duck.height * duckScalar / 2, bombposX[r], bombposY[r], bombSize);
-  }
-  
-  if (hit) {
-    endGame();
-  }
-  
-  //Resetting bombs to top of screen
-  if (time > fallTime) {
-    initbombpos();
-    time = 0;
-  }
-}
-
-function startGame() {
-  startButton.hide();
-  noCursor();
-  isUsingMouse = true;
-  gameStarted = true;
-
-}
-
-//Ending game and displaying try again button
-function endGame() {
-  gameStarted = false;
-  background("Black");
-  fill(255);
-  text("GAME OVER", width / 2, height /2);
-  cursor();
-    
-  tryAgainButton = createButton("Try Again?");
-  tryAgainButton.position(width / 2 - (width / 4) / 2, height * 0.7);
-  tryAgainButton.size(width /4, height / 8);
-  tryAgainButton.mousePressed(tryAgain);
-  
-}
-
-//resetting game
-function tryAgain() {
-  tryAgainButton.hide();
-  setup();
-}
-
-function displayDuck() {
- 
-  imageMode(CENTER);
-  
-  //Keeping duck below half
-  if (mouseY > height / 2) {
-    image(duck, mouseX + 10, mouseY + 10, duck.width * duckScalar, duck.height * duckScalar) ;
-    
-    x = mouseX;
-    y = mouseY;
-  }
-  
-  //Following the X of the mouse but not Y if mouse is above half
-  else {
-    image(duck, mouseX, y, duck.width * duckScalar, duck.height * duckScalar);
-  }
-}
-
-function mouseClicked() {
-  quack.play();
-}
-
-function displayText() {
-  fill(0);
-  text("Press 'b' to change the balls colour", 0, height / 10); 
-}
-
+// Sets movement variables to true based on key presses. The handleMovement function then uses these vairables for movement
 function keyPressed() {
-  if (key === 'b') {
-    ballColour = random(ballColours);
+  if (key === "a") {
+    isMovingLeft = true;
+  }
+  if (key === "d") {
+    isMovingRight = true;
+  }
+  if (keyCode === 32 && isGrounded) {
+    initialY = spriteY;
+    isJumping = true;
   }
 }
 
-function scoreUpdate() {
-  score += 10;
-  fill(0);
-  text("SCORE:" + int(score/fallTime), width - 65, 15 );
+// Sets movement variables to false based on key release. The handleMovement function then uses these vairables for movement
+function keyReleased() {
+  if (key === "a") {
+    isMovingLeft = false;
+  }
+  if (key === "d") {
+    isMovingRight = false;
+  }
+  if (keyCode === 32) {
+    isJumping = false;
+  }
+}
+
+// Applies gravity and checks if you are on the ground
+function applyGravity() {
+  // Ground Detection
+  isGrounded = collideLineRect(0 - 30, height * 0.63, width + 30, height * 0.63, spriteX, spriteY, height/hitboxScale, height/hitboxScale);
+  
+  if (!isGrounded && !isJumping) {
+    spriteY += gravity;
+  }
+
+}
+
+// Changes background and resets location when you run off of the screen
+function nextScreen() {
+  if (spriteX > width + 10) {
+    spriteX = 0;
+    selectBackgrounds();
+    areaCounter++;
+  } 
+  else if (spriteX < 0 - 25) {
+    spriteX = width;
+    selectBackgrounds();  
+    areaCounter++;
+  }
+}
+
+
+// Added this for the fun of it and to test out mouse wheel imput
+function mouseWheel() {
+  if (state === "start" || state === "dead") {
+    backgroundColour = random(250);
+  }
 }
