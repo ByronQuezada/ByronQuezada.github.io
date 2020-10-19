@@ -1,11 +1,11 @@
-// Player managment
-let hitboxScale = 9;
-let spriteScale = 9;
-//let knightLeft1, knightRight1, knightLeft2, knightRight2, knightStill;
-let spriteX;
-let spriteY;
-let playHealth = 100;
-let monsterKills = 0;
+// // Player managment
+// let hitboxScale = 9;
+// let spriteScale = 9;
+// //let knightLeft1, knightRight1, knightLeft2, knightRight2, knightStill;
+// let spriteX;
+// let spriteY;
+// let playHealth = 100;
+// let monsterKills = 0;
 
 // Background managment.
 let background1, background2, background3, background4, background5;
@@ -15,16 +15,16 @@ let backgroundSelection = [];
 let backgroundColour;
 
 // Movement
-let isMovingLeft, isMovingRight, isJumping;
-let isGrounded = false;
-let initialY;
-let jumpHeight = 70;
-let jumpSpeed = 8;
-let gravity = 5;
-let movementSpeed = 7;
+// let isMovingLeft, isMovingRight, isJumping;
+// let isGrounded = false;
+// let initialY;
+// let jumpHeight = 70;
+// let jumpSpeed = 8;
+// let gravity = 5;
+// let movementSpeed = 7;
 
 // Counters used to change between sprites, screens/gamestates, and locations
-let spriteTimer = 0;
+// let spriteTimer = 0;
 let state = "start";
 let areaCounter = 0; // Does nothing in this version
 
@@ -52,11 +52,11 @@ function setup() {
   imageMode(CENTER);
   rectMode(CORNER);
   frameRate(30);
-  spriteX = width / 2;
-  spriteY = height / 2;
-  isMovingLeft = false;
-  isMovingRight = false;
-  isJumping = false;
+  // spriteX = width / 2;
+  // spriteY = height / 2;
+  // isMovingLeft = false;
+  // isMovingRight = false;
+  // isJumping = false;
   backgrounds = [background1, background2, background3, background4, background5];
   selectBackgrounds();
   backgroundColour = 0;
@@ -78,14 +78,14 @@ function draw() {
     // line(0 - 10, height * 0.63, width + 10, height * 0.63);
     
     // Draws and moves sprite.
-    displaySprite();
-    handleMovement();
-    applyGravity();
-    nextScreen();
+    // displaySprite();
+    // // handleMovement();
+    // applyGravity();
+    // nextScreen();
   }
-  else if (state === "dead") {
-    deathScreen();
-  }
+  // else if (state === "dead") {
+  //   deathScreen();
+  // }
 }
 
 // Makes a start screen
@@ -102,13 +102,13 @@ function startScreen() {
 }
 
 // Makes a death screen. This should never show as I have not added a way to die.
-function deathScreen() {
-  clear();
-  background(0);
-  fill(255);
-  textSize(35);
-  text("How did you manage this? I havent even added this", width / 2, height / 2, width/4, height/2);
-}
+// function deathScreen() {
+//   clear();
+//   background(0);
+//   fill(255);
+//   textSize(35);
+//   text("How did you manage this? I havent even added this", width / 2, height / 2, width/4, height/2);
+// }
 
 // Selects which backgounds will be shown
 function selectBackgrounds() {
@@ -165,80 +165,80 @@ function displaySprite() {
 }
 
 // Checks if sprite should be moving and then moves the sprite
-function handleMovement() {
+// function handleMovement() {
 
-  if (isMovingLeft) {
-    spriteX -= movementSpeed;
-  }
-  if (isMovingRight) {
-    spriteX += movementSpeed;
-  }
-  if (isJumping) {
-    if (spriteY >= initialY - jumpHeight) {
-      spriteY -= jumpSpeed;
-    }
-    else {
-      isJumping = false;
-    }
-  }
-}
+//   if (isMovingLeft) {
+//     spriteX -= movementSpeed;
+//   }
+//   if (isMovingRight) {
+//     spriteX += movementSpeed;
+//   }
+//   if (isJumping) {
+//     if (spriteY >= initialY - jumpHeight) {
+//       spriteY -= jumpSpeed;
+//     }
+//     else {
+//       isJumping = false;
+//     }
+//   }
+// }
 
 // Sets movement variables to true based on key presses. The handleMovement function then uses these vairables for movement
-function keyPressed() {
-  if (key === "a") {
-    isMovingLeft = true;
-  }
-  if (key === "d") {
-    isMovingRight = true;
-  }
-  if (keyCode === 32 && isGrounded) {
-    initialY = spriteY;
-    isJumping = true;
-  }
-}
+// function keyPressed() {
+//   if (key === "a") {
+//     isMovingLeft = true;
+//   }
+//   if (key === "d") {
+//     isMovingRight = true;
+//   }
+//   if (keyCode === 32 && isGrounded) {
+//     initialY = spriteY;
+//     isJumping = true;
+//   }
+// }
 
 // Sets movement variables to false based on key release. The handleMovement function then uses these vairables for movement
-function keyReleased() {
-  if (key === "a") {
-    isMovingLeft = false;
-  }
-  if (key === "d") {
-    isMovingRight = false;
-  }
-  if (keyCode === 32) {
-    isJumping = false;
-  }
-}
+// function keyReleased() {
+//   if (key === "a") {
+//     isMovingLeft = false;
+//   }
+//   if (key === "d") {
+//     isMovingRight = false;
+//   }
+//   if (keyCode === 32) {
+//     isJumping = false;
+//   }
+// }
 
 // Applies gravity and checks if you are on the ground
-function applyGravity() {
-  // Ground Detection
-  isGrounded = collideLineRect(0 - 30, height * 0.63, width + 30, height * 0.63, spriteX, spriteY, height/hitboxScale, height/hitboxScale);
+// function applyGravity() {
+//   // Ground Detection
+//   isGrounded = collideLineRect(0 - 30, height * 0.63, width + 30, height * 0.63, spriteX, spriteY, height/hitboxScale, height/hitboxScale);
   
-  if (!isGrounded && !isJumping) {
-    spriteY += gravity;
-  }
+//   if (!isGrounded && !isJumping) {
+//     spriteY += gravity;
+//   }
 
-}
+// }
 
 // Changes background and resets location when you run off of the screen
-function nextScreen() {
-  if (spriteX > width + 10) {
-    spriteX = 0;
-    selectBackgrounds();
-    areaCounter++;
-  } 
-  else if (spriteX < 0 - 25) {
-    spriteX = width;
-    selectBackgrounds();  
-    areaCounter++;
-  }
-}
+// function nextScreen() {
+//   if (spriteX > width + 10) {
+//     spriteX = 0;
+//     selectBackgrounds();
+//     areaCounter++;
+//   } 
+//   else if (spriteX < 0 - 25) {
+//     spriteX = width;
+//     selectBackgrounds();  
+//     areaCounter++;
+//   }
+// }
 
 
 // Added this for the fun of it and to test out mouse wheel imput
-function mouseWheel() {
-  if (state === "start" || state === "dead") {
-    backgroundColour = random(250);
-  }
-}
+// function mouseWheel() {
+//   if (state === "start" || state === "dead") {
+//     backgroundColour = random(250);
+//   }
+// }
