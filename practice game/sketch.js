@@ -218,7 +218,7 @@ function applyGravity() {
 
 }
 
-// Changes background and resets location when you run off of the screen
+// Changes background and resets location when you get on the end of the screen.
 function nextScreen() {
   if (spriteX > width + 10) {
     spriteX = 0;
@@ -238,4 +238,7 @@ function mouseWheel() {
   if (state === "start" || state === "dead") {
     backgroundColour = random(250);
   }
+}
+function layDowm() {
+  
 }
