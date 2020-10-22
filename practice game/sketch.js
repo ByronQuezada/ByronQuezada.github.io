@@ -71,8 +71,8 @@ function draw() {
     displayBackground();
     
     // Uncomment next 2 lines to show character and ground hitbox.
-    // rect(spriteX, spriteY, height/hitboxScale, height/hitboxScale);
-    // line(0 - 10, height * 0.63, width + 10, height * 0.63);
+    rect(spriteX, spriteY, height/hitboxScale, height/hitboxScale);
+    line(0 - 10, height * 0.63, width + 10, height * 0.63);
     
     // Draws and moves sprite.
     displaySprite();
